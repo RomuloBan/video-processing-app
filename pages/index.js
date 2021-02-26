@@ -13,10 +13,13 @@ import {
   Heading
 } from "@chakra-ui/react";
 import ProtectedPage from "../components/protectedPage";
-import { useAuth } from '../hooks';
+import { useAuth, useInterval } from '../hooks';
 export default function Home() {
   const [file, setFile] = useState('')
   const [videoSrc, setVideoSrc] = useState('')
+  const [conversationId, setConversationId] = useState(null)
+  const [jobId, setJobId] = useState(null)
+  const [status, setStatus] = useState('not started')
   const videoRef = useRef(null)
 
   const {token} = useAuth();
@@ -31,8 +34,28 @@ export default function Home() {
       json: true
     })
     .then(rawResult => rawResult.json())
-    .then(res => console.log('>>>>>', res))
+    .then(res => {
+      console.log('>>>>>', res)
+      setConversationId(res.conversationId)
+      setJobId(res.jobId)
+    })
   }
+
+  useInterval(
+    () => {
+      fetch(`https://api.symbl.ai/v1/job/${jobId}`, {
+        method: 'GET',
+        headers: {
+          'x-api-key': token
+        }
+      })
+        .then(rawResult => rawResult.json())
+        .then(result => setStatus(result.status))
+    }, 
+    1000, 
+    status === 'completed' || !jobId
+  )
+
   useEffect(() => {
     const src = URL.createObjectURL(new Blob([file], {type: 'video/mp4'}))
     setVideoSrc(src)
