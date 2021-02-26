@@ -39,7 +39,11 @@ export default function Home() {
             />
           </AspectRatio>
         </Box>
-        <Button>Send for processing</Button>
+        <Button
+          colorScheme="teal"
+          size="md"
+          onClick={e => console.log('Submit file for processing')}
+        >Send for processing</Button>
         <Divider orientation="horizontal" />
         <Heading>Processing Data</Heading>
         <SimpleGrid columns={2} spacingX="40px" spacingY="20px" marginTop="1rem">
