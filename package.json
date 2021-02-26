@@ -1,7 +1,6 @@
 {
   "name": "video-processing-app",
   "version": "0.1.0",
-  "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -15,5 +14,7 @@
     "next": "10.0.7",
     "react": "17.0.1",
     "react-dom": "17.0.1"
-  }
+  },
+  "license": "ISC",
+  "author": ""
 }
