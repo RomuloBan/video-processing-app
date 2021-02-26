@@ -1,9 +1,10 @@
-import React, {useState}from 'react'
-import { Container, Button, Input, Stack } from "@chakra-ui/react";
-import Header from "./header";
+import React, {useState} from 'react'
+import { Container, Button, Input, Stack } from "@chakra-ui/react"
+import Header from "./header"
+import { useAuth } from "../hooks"
 
 const ProtectedPage = ({children}) => {
-    const [token, setToken] = useState('')
+    const {token, setToken} = useAuth('')
     const [appId, setAppId] = useState('')
     const [appSecret, setAppSecret] = useState('')
 
@@ -24,7 +25,6 @@ const ProtectedPage = ({children}) => {
         })
         const json = await response.json()
         setToken(json.accessToken)
-        console.log('>>>', json)
     }
     return (
         <>
