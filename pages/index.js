@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import Header from '../components/header'
+import { useEffect, useState, useRef } from "react";
 import { 
   InputGroup, 
   Container, 
@@ -13,17 +14,29 @@ import {
 } from "@chakra-ui/react";
 import ProtectedPage from "../components/protectedPage";
 export default function Home() {
+  const [file, setFile] = useState('')
+  const [videoSrc, setVideoSrc] = useState('')
+  const videoRef = useRef(null)
+  useEffect(() => {
+    const src = URL.createObjectURL(new Blob([file], {type: 'video/mp4'}))
+    setVideoSrc(src)
+  }, [file])
   return (
     <ProtectedPage>
       <Container maxWidth="1200px">
         <Box marginBottom="1rem">
           <InputGroup marginBottom="2rem">
-            <Input type="file" id="video" accept="video/*" />
+            <Input type="file" id="video" accept="video/*" onChange={e => setFile(e.target.files[0])}/>
           </InputGroup>
         </Box>
         <Box bg="lightgrey" marginBottom="1rem">
-          <AspectRatio maxH="400px" ratio={16 / 9}>
-            <div>Video Component</div>
+          <AspectRatio maxH="100%" ratio={16 / 9}>
+            <video
+              id="video-summary"
+              controls
+              ref={videoRef}
+              src={videoSrc}
+            />
           </AspectRatio>
         </Box>
         <Button>Send for processing</Button>
