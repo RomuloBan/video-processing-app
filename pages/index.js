@@ -10,7 +10,11 @@ import {
   Divider,
   Input,
   Button,
-  Heading
+  Heading,
+  ListItem,
+  Badge,
+  List,
+  Text
 } from "@chakra-ui/react";
 import ProtectedPage from "../components/protectedPage";
 import { useAuth, useInterval } from '../hooks';
@@ -20,6 +24,27 @@ export default function Home() {
   const [conversationId, setConversationId] = useState(null)
   const [jobId, setJobId] = useState(null)
   const [status, setStatus] = useState('not started')
+  const [messages, setMessages] = useState([])
+
+  const getTranscripts = () => {
+    fetch(`https://api.symbl.ai/v1/conversations/${conversationId}/messages`, {
+      method: 'GET',
+      headers: {
+        'x-api-key': token,
+        'Content-Type': 'application/json'
+      },
+      mode: 'cors'
+    })
+    .then(rawResult => rawResult.json())
+    .then(result => setMessages(result.messages))
+  }
+
+  useEffect(() => {
+    if (status === 'completed') {
+      getTranscripts();
+    }
+  }, [status])
+
   const videoRef = useRef(null)
 
   const {token} = useAuth();
@@ -35,7 +60,6 @@ export default function Home() {
     })
     .then(rawResult => rawResult.json())
     .then(res => {
-      console.log('>>>>>', res)
       setConversationId(res.conversationId)
       setJobId(res.jobId)
     })
@@ -91,6 +115,18 @@ export default function Home() {
               <Heading as="h4" size="md">
                 Transcripts pulled from Conversations API
               </Heading>
+              <List spacing={3} marging="2rem">
+                {messages.map(message => (
+                  <ListItem key={message.id}>
+                    <Container>
+                      <Text fontSize="lg">{message.text}</Text>
+                      <Badge colorScheme="green">
+                        {`${new Date(message.startTime).toDateString()} ${new Date(message.startTime).toTimeString()}`}
+                      </Badge>
+                    </Container>
+                  </ListItem>
+                ))}
+              </List>
             </Container>
           </Box>
         </SimpleGrid>
