@@ -13,10 +13,26 @@ import {
   Heading
 } from "@chakra-ui/react";
 import ProtectedPage from "../components/protectedPage";
+import { useAuth } from '../hooks';
 export default function Home() {
   const [file, setFile] = useState('')
   const [videoSrc, setVideoSrc] = useState('')
   const videoRef = useRef(null)
+
+  const {token} = useAuth();
+  const submitFileForProcessing = (file) => {
+    fetch('https://api.symbl.ai/v1/process/video', {
+      method: 'POST',
+      headers: {
+        'x-api-key': token,
+        'Content-Type': 'video/mp4'
+      },
+      body: file,
+      json: true
+    })
+    .then(rawResult => rawResult.json())
+    .then(res => console.log('>>>>>', res))
+  }
   useEffect(() => {
     const src = URL.createObjectURL(new Blob([file], {type: 'video/mp4'}))
     setVideoSrc(src)
@@ -42,7 +58,7 @@ export default function Home() {
         <Button
           colorScheme="teal"
           size="md"
-          onClick={e => console.log('Submit file for processing')}
+          onClick={() => submitFileForProcessing(file)}
         >Send for processing</Button>
         <Divider orientation="horizontal" />
         <Heading>Processing Data</Heading>
